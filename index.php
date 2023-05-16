@@ -28,10 +28,12 @@ Flight::route('POST /add', function(){
     $name = Flight::request()->data['name'];    
     $email = Flight::request()->data['email'];
     $tel = Flight::request()->data['tel'];
-  
+    $result = false;
     $user = new UsuarioController();
-    $result = $user->setUsuario($name, $email, $tel);
-
+    $msg =$user->validarDados($name, $email, $tel);
+    if($msg == "Dados Validos"){
+        $result = $user->setUsuario($name, $email, $tel);
+    } 
 
     if($result){
         Flight::json([
@@ -42,8 +44,63 @@ Flight::route('POST /add', function(){
     } else{
         Flight::json([
             'status' =>'error',
-            'msg' => '',
+            'msg' => $msg,
             'data' => $result
+        ]);
+    }
+});
+
+Flight::route('PUT /update/@id', function($id) {
+    $user = new UsuarioController();
+    $result = $user->getUsuarioId($id);
+    
+ 
+    $result_update = false;
+    if($result){
+        $name = Flight::request()->data['name']; 
+        $email = Flight::request()->data['email'];
+        $tel = Flight::request()->data['tel'];
+
+        $msg = $user->validarDados($name, $email, $tel);
+
+        if($msg == "Dados Validos"){
+            $result_update = $user->updateUsuario($id, $name, $email, $tel);
+            $result_ = $user->getUsuarioId($id);
+        }
+    }else{
+        $msg = 'Usuario não consta na nossa base de dados.';
+    }
+
+    if ($result_update) {
+        Flight::json([
+            'status' => 'success',
+            'msg' => $result_update,
+            'data' => $result_
+        ]);
+    } else {
+        Flight::json([
+            'status' => 'error',
+            'msg' => $msg,
+            'data' => $result_update
+        ]);
+    }
+});
+
+Flight::route('DELETE /del/@id', function($id){
+    $user = new UsuarioController();
+    $result = $user->deleteUsuario($id);
+
+    if($result){
+        Flight::json([
+            'status' =>'sucess',
+            'msg' => $result,
+            'data' => ''
+        ]);
+    } else{
+        Flight::json([
+            'status' =>'error',
+            'msg' => $result,
+            'data' => ''
         ]);
     }
 });

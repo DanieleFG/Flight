@@ -4,6 +4,7 @@ namespace Daniele\Dashboard\Controller;
 require_once 'vendor/autoload.php';
 
 use Daniele\Dashboard\conexao;
+use mysqli;
 
 class UsuarioController {
     private $conn;
@@ -43,11 +44,53 @@ class UsuarioController {
         return  $result;
 
 
-    }
-    
+    }    
     
     function validarDados($name, $email, $tel){
-        
+        $msg = "";
+        if(strlen($name) > 7 && strlen($email)> 10 && strlen($tel) > 11){
+            if(filter_var($email, FILTER_VALIDATE_EMAIL)){
+                $msg = "Dados Validos";
+               return $msg;
+            }else{
+                $msg .= "Email Invalido";
+            }
+        }else{
+            $msg .= "Quantidade baixa e caracter";
+        }
+        return $msg;
+    }
+
+    function getUsuarioId($id){
+        $sql = "SELECT * FROM user WHERE id=".$id;
+        $result = [];
+        $rs = $this->conn->getConn()->query($sql);
+        while($row = mysqli_fetch_assoc($rs)){
+            $result[] = $row;
+        }
+        return $result;
+    }
+
+    function updateUsuario($id, $name, $email, $tel){
+        $sql = "UPDATE user SET name='". $name."', email='". $email ."', tel='".$tel."' WHERE id=".$id;
+     
+        $msg= '';
+        $rs =  $this->conn->getConn()->query($sql);   
+        if($rs){
+            return $msg = "Update success";
+        } else{
+            return  $msg = "Error";
+        }   
+    }
+
+    function deleteUsuario($id){
+        $sql = "DELETE FROM user WHERE id=".$id;
+        $rs = $this->conn->getConn()->query($sql);
+        if($rs){
+            return $msg = "Delete success";
+        } else{
+            return  $msg = "Error";
+        }   
     }
 }
 // $user = new UsuarioController();
