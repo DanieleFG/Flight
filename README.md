@@ -19,3 +19,11 @@ composer require mikecao/flight
 docker start CONTAINER ID
 
 php -S 0.0.0.0:8888
+
+
+Vue
+npm init vue@latest
+
+ cd <your-project-name>
+ npm install
+ npm run dev
